@@ -1,0 +1,30 @@
+{
+  "organization": "Example Research Org",
+  "entities": [
+    {
+      "entity_id": "e1",
+      "entity_type": "domain",
+      "value": "api.oldbrand.example",
+      "dimension": "INFRASTRUCTURE_DNA",
+      "first_seen": "2021-01-01T00:00:00Z",
+      "last_seen": "2024-06-01T00:00:00Z",
+      "observed_at": "2026-07-21T12:00:00Z",
+      "source": "synthetic_ct",
+      "evidence_ids": ["EVD-1"],
+      "metadata": {"oauth_issuer": "https://id.example", "sdk_family": "example-sdk", "certificate_org": "Old Brand LLC"}
+    },
+    {
+      "entity_id": "e2",
+      "entity_type": "domain",
+      "value": "api.example.test",
+      "dimension": "API_DNA",
+      "first_seen": "2024-01-01T00:00:00Z",
+      "last_seen": null,
+      "observed_at": "2026-07-21T12:00:00Z",
+      "source": "synthetic_sdk",
+      "evidence_ids": ["EVD-2"],
+      "metadata": {"oauth_issuer": "https://id.example", "sdk_family": "example-sdk", "certificate_org": "Example Corp"}
+    }
+  ],
+  "relationships": []
+}
