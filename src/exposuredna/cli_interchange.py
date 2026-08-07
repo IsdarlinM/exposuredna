@@ -4,10 +4,12 @@ import json
 from pathlib import Path
 
 import typer
+from pydantic import ValidationError
 
 from .cli import app
 from .interchange import (
     EntityResolutionMutationPlan,
+    EntityResolutionMutationResult,
     apply_resolution_plan,
     export_snapshot_graphml,
     export_snapshot_jsonld,
@@ -24,8 +26,16 @@ def _read_json(path: Path) -> object:
 
 
 def _write_text(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8")
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+    except OSError as exc:
+        raise typer.BadParameter(f"cannot write {path}: {exc}") from exc
+
+
+def _validation_error(label: str, exc: Exception) -> typer.Exit:
+    typer.echo(f"invalid {label}: {exc}", err=True)
+    return typer.Exit(2)
 
 
 @app.command("snapshot-export")
@@ -35,15 +45,18 @@ def snapshot_export(
     format: str = typer.Option("jsonld", "--format"),
 ) -> None:
     """Export a snapshot as evidence-bearing JSON-LD or GraphML."""
-
-    value = OrganizationSnapshot.model_validate(_read_json(snapshot))
     normalized = format.lower()
-    if normalized == "jsonld":
-        content = export_snapshot_jsonld(value)
-    elif normalized == "graphml":
-        content = export_snapshot_graphml(value)
-    else:
+    if normalized not in {"jsonld", "graphml"}:
         raise typer.BadParameter("--format must be jsonld or graphml")
+    try:
+        value = OrganizationSnapshot.model_validate(_read_json(snapshot))
+        content = (
+            export_snapshot_jsonld(value)
+            if normalized == "jsonld"
+            else export_snapshot_graphml(value)
+        )
+    except (ValidationError, ValueError) as exc:
+        raise _validation_error("snapshot", exc) from exc
     _write_text(output, content)
     typer.echo(str(output))
 
@@ -57,21 +70,20 @@ def resolution_plan(
     apply: bool = typer.Option(False, "--apply"),
 ) -> None:
     """Preview or materialize an approved merge/split result as a new JSON file."""
-
-    value = OrganizationSnapshot.model_validate(_read_json(snapshot))
-    mutation = EntityResolutionMutationPlan.model_validate(_read_json(plan))
-    mutation = mutation.model_copy(
-        update={
-            "human_approved": approve,
-            "dry_run": not apply,
-        }
-    )
     if apply and not approve:
         raise typer.BadParameter("--apply requires --approve")
     try:
+        value = OrganizationSnapshot.model_validate(_read_json(snapshot))
+        mutation = EntityResolutionMutationPlan.model_validate(_read_json(plan))
+        mutation = mutation.model_copy(
+            update={"human_approved": approve, "dry_run": not apply}
+        )
         result = apply_resolution_plan(value, mutation)
-    except (PermissionError, ValueError) as exc:
-        raise typer.BadParameter(str(exc)) from exc
+    except PermissionError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(3) from exc
+    except (ValidationError, ValueError) as exc:
+        raise _validation_error("resolution plan", exc) from exc
     _write_text(output, result.model_dump_json(indent=2) + "\n")
     typer.echo(str(output))
 
@@ -83,13 +95,13 @@ def resolution_rollback(
     output: Path = typer.Option(..., "--output"),
 ) -> None:
     """Restore the complete pre-plan snapshot into a new JSON file."""
-
-    from .interchange import EntityResolutionMutationResult
-
-    value = EntityResolutionMutationResult.model_validate(_read_json(result))
     try:
+        value = EntityResolutionMutationResult.model_validate(_read_json(result))
         restored = rollback_resolution_plan(value, rollback_token=rollback_token)
     except PermissionError as exc:
-        raise typer.BadParameter(str(exc)) from exc
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(3) from exc
+    except (ValidationError, ValueError) as exc:
+        raise _validation_error("resolution result", exc) from exc
     _write_text(output, restored.model_dump_json(indent=2) + "\n")
     typer.echo(str(output))
