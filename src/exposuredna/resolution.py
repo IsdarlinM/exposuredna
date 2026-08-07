@@ -131,7 +131,9 @@ class ResolutionReview(BaseModel):
     @model_validator(mode="after")
     def review_cannot_validate_ownership(self) -> "ResolutionReview":
         if self.resulting_status is ClaimStatus.VALIDATED:
-            raise ValueError("entity-resolution review cannot create VALIDATED ownership")
+            raise ValueError(
+                "entity-resolution review cannot create VALIDATED ownership"
+            )
         return self
 
 
@@ -152,6 +154,51 @@ _OWNERSHIP_BLOCKERS = {
     NegativeConstraint.TEMPORAL_CONFLICT,
 }
 
+_CONSTRAINT_EXPLANATIONS = {
+    NegativeConstraint.SHARED_HOSTING: (
+        "The infrastructure may be shared by unrelated organizations."
+    ),
+    NegativeConstraint.SHARED_ASN: (
+        "The ASN may belong to a hosting or cloud provider."
+    ),
+    NegativeConstraint.CDN_OR_CLOUD: (
+        "The network signal may identify a CDN/cloud platform rather than an owner."
+    ),
+    NegativeConstraint.WILDCARD_CERTIFICATE: (
+        "The certificate may cover unrelated tenants or catch-all names."
+    ),
+    NegativeConstraint.COMMON_ANALYTICS_ID: (
+        "The analytics identifier may be reused by an agency or vendor."
+    ),
+    NegativeConstraint.COMMON_OAUTH_PROVIDER: (
+        "A common OAuth issuer/provider does not imply organizational ownership."
+    ),
+    NegativeConstraint.REPOSITORY_FORK: (
+        "Repository similarity may result from a fork."
+    ),
+    NegativeConstraint.COPIED_CODE: (
+        "Code similarity may result from copying or shared open-source dependencies."
+    ),
+    NegativeConstraint.WHITE_LABEL_APPLICATION: (
+        "The application may be a white-label deployment."
+    ),
+    NegativeConstraint.OUTSOURCED_DEVELOPMENT: (
+        "A third-party developer may publish or operate the asset."
+    ),
+    NegativeConstraint.PACKAGE_NAMESPACE_COLLISION: (
+        "The package namespace may be non-exclusive or colliding."
+    ),
+    NegativeConstraint.HISTORICAL_OWNERSHIP_ONLY: (
+        "Historical ownership does not establish current ownership."
+    ),
+    NegativeConstraint.DOMAIN_TRANSFER: (
+        "The domain or asset may have changed owners."
+    ),
+    NegativeConstraint.TEMPORAL_CONFLICT: (
+        "The timestamps are incompatible with the proposed relationship."
+    ),
+}
+
 
 def evaluate_resolution(
     *,
@@ -163,11 +210,15 @@ def evaluate_resolution(
 ) -> ResolutionCandidate:
     """Evaluate entity resolution without asserting ownership from similarity."""
 
-    negative_constraints = sorted(
-        {signal.negative_constraint for signal in signals if signal.negative_constraint},
-        key=lambda item: item.value,
+    constraints = [
+        signal.negative_constraint
+        for signal in signals
+        if signal.negative_constraint is not None
+    ]
+    negative_constraints = sorted(set(constraints), key=lambda item: item.value)
+    evidence_ids = sorted(
+        {value for signal in signals for value in signal.evidence_ids}
     )
-    evidence_ids = sorted({value for signal in signals for value in signal.evidence_ids})
     counter_ids = sorted(
         {value for signal in signals for value in signal.counter_evidence_ids}
     )
@@ -192,27 +243,13 @@ def evaluate_resolution(
         missing.append("specific and exclusive relationship signal")
     if duplicates:
         alternatives.append(
-            "Multiple signals may derive from the same upstream source rather than independent confirmation."
+            "Multiple signals may derive from the same upstream source rather "
+            "than independent confirmation."
         )
-    for constraint in negative_constraints:
-        alternatives.append(
-            {
-                NegativeConstraint.SHARED_HOSTING: "The infrastructure may be shared by unrelated organizations.",
-                NegativeConstraint.SHARED_ASN: "The ASN may belong to a hosting or cloud provider.",
-                NegativeConstraint.CDN_OR_CLOUD: "The network signal may identify a CDN/cloud platform rather than an owner.",
-                NegativeConstraint.WILDCARD_CERTIFICATE: "The certificate may cover unrelated tenants or catch-all names.",
-                NegativeConstraint.COMMON_ANALYTICS_ID: "The analytics identifier may be reused by an agency or vendor.",
-                NegativeConstraint.COMMON_OAUTH_PROVIDER: "A common OAuth issuer/provider does not imply organizational ownership.",
-                NegativeConstraint.REPOSITORY_FORK: "Repository similarity may result from a fork.",
-                NegativeConstraint.COPIED_CODE: "Code similarity may result from copying or shared open-source dependencies.",
-                NegativeConstraint.WHITE_LABEL_APPLICATION: "The application may be a white-label deployment.",
-                NegativeConstraint.OUTSOURCED_DEVELOPMENT: "A third-party developer may publish or operate the asset.",
-                NegativeConstraint.PACKAGE_NAMESPACE_COLLISION: "The package namespace may be non-exclusive or colliding.",
-                NegativeConstraint.HISTORICAL_OWNERSHIP_ONLY: "Historical ownership does not establish current ownership.",
-                NegativeConstraint.DOMAIN_TRANSFER: "The domain or asset may have changed owners.",
-                NegativeConstraint.TEMPORAL_CONFLICT: "The timestamps are incompatible with the proposed relationship.",
-            }[constraint]
-        )
+    alternatives.extend(
+        _CONSTRAINT_EXPLANATIONS[constraint]
+        for constraint in negative_constraints
+    )
 
     breakdown = score_confidence(
         [signal.confidence_signal() for signal in signals],
@@ -237,12 +274,13 @@ def evaluate_resolution(
         status = ClaimStatus.INFERRED
         confidence = min(review.adjusted_confidence, 0.74)
 
-    # Similarity and correlation never create an ownership assertion. Even a
-    # reviewed candidate remains an evidence-bearing inference.
-    ownership_claimed = False
-    if proposed_relationship is RelationshipType.OWNS and status is ClaimStatus.INFERRED:
+    if (
+        proposed_relationship is RelationshipType.OWNS
+        and status is ClaimStatus.INFERRED
+    ):
         alternatives.append(
-            "The candidate relationship is an ownership inference and requires stronger authoritative evidence."
+            "The candidate relationship is an ownership inference and requires "
+            "stronger authoritative evidence."
         )
 
     return ResolutionCandidate(
@@ -260,7 +298,7 @@ def evaluate_resolution(
         missing_evidence=sorted(set(missing)),
         alternative_explanations=sorted(set(alternatives)),
         skeptic_verdict=review.verdict.value,
-        ownership_claimed=ownership_claimed,
+        ownership_claimed=False,
     )
 
 
@@ -272,7 +310,10 @@ def apply_human_review(
     reason: str,
     evidence_ids: Sequence[str] = (),
 ) -> ResolutionReview:
-    if decision in {HumanResolutionDecision.REJECT, HumanResolutionDecision.SPLIT_ENTITIES}:
+    if decision in {
+        HumanResolutionDecision.REJECT,
+        HumanResolutionDecision.SPLIT_ENTITIES,
+    }:
         status = ClaimStatus.REJECTED
     elif decision is HumanResolutionDecision.DEFER:
         status = ClaimStatus.UNKNOWN
