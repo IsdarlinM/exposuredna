@@ -6,11 +6,7 @@ from typing import Sequence
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sric.exports import ExportEdge, ExportNode, export_graphml, export_jsonld
 
-from .snapshots import (
-    OrganizationSnapshot,
-    SnapshotEntity,
-    SnapshotRelationship,
-)
+from .snapshots import OrganizationSnapshot, SnapshotEntity
 
 
 class EntityMergeOperation(BaseModel):
@@ -64,6 +60,27 @@ class EntityResolutionMutationPlan(BaseModel):
     splits: list[EntitySplitOperation] = Field(default_factory=list)
     human_approved: bool = False
     dry_run: bool = True
+
+    @model_validator(mode="after")
+    def validate_operation_set(self) -> "EntityResolutionMutationPlan":
+        if not self.merges and not self.splits:
+            raise ValueError("resolution plan requires at least one merge or split")
+        touched: list[str] = []
+        for merge in self.merges:
+            touched.append(merge.target_entity_id)
+            touched.extend(merge.source_entity_ids)
+        for split in self.splits:
+            touched.append(split.source_entity_id)
+            touched.extend(item.entity_id for item in split.new_entities)
+        duplicates = sorted(
+            {entity_id for entity_id in touched if touched.count(entity_id) > 1}
+        )
+        if duplicates:
+            raise ValueError(
+                "entities may participate in only one plan operation: "
+                + ", ".join(duplicates)
+            )
+        return self
 
 
 class EntityResolutionMutationResult(BaseModel):
@@ -149,10 +166,14 @@ def _merge_entity(
     if source_types - {target.entity_type}:
         raise ValueError("merge entities must share the same entity_type")
     attributes = dict(target.attributes)
-    merged_from = sorted(item.entity_id for item in sources)
-    attributes["merged_from"] = sorted(
-        set(attributes.get("merged_from", [])) | set(merged_from)
+    existing_raw = attributes.get("merged_from", [])
+    existing_merged = (
+        {item for item in existing_raw if isinstance(item, str)}
+        if isinstance(existing_raw, list)
+        else set()
     )
+    merged_from = {item.entity_id for item in sources}
+    attributes["merged_from"] = sorted(existing_merged | merged_from)
     attributes["merge_reason"] = operation.reason
     return target.model_copy(
         update={
@@ -178,7 +199,9 @@ def apply_resolution_plan(
         raise PermissionError("entity merge/split plans require human approval")
 
     before = snapshot.model_copy(deep=True)
-    entities = {item.entity_id: item.model_copy(deep=True) for item in snapshot.entities}
+    entities = {
+        item.entity_id: item.model_copy(deep=True) for item in snapshot.entities
+    }
     relationships = {
         item.relationship_id: item.model_copy(deep=True)
         for item in snapshot.relationships
@@ -246,7 +269,7 @@ def apply_resolution_plan(
         for relationship_id in touching:
             relationship = relationships[relationship_id]
             replacement_id = operation.relationship_assignments[relationship_id]
-            update = {}
+            update: dict[str, str] = {}
             if relationship.source_entity_id == source.entity_id:
                 update["source_entity_id"] = replacement_id
             if relationship.target_entity_id == source.entity_id:
@@ -256,7 +279,18 @@ def apply_resolution_plan(
         entities.pop(source.entity_id)
         changed_entities.add(source.entity_id)
 
-    after = snapshot.model_copy(
+    self_loops = sorted(
+        relationship.relationship_id
+        for relationship in relationships.values()
+        if relationship.source_entity_id == relationship.target_entity_id
+    )
+    if self_loops:
+        raise ValueError(
+            "resolution plan would create self-referential relationships: "
+            + ", ".join(self_loops)
+        )
+
+    proposed = snapshot.model_copy(
         update={
             "snapshot_id": f"{snapshot.snapshot_id}:{plan.plan_id}",
             "entities": sorted(entities.values(), key=lambda item: item.entity_id),
@@ -265,28 +299,27 @@ def apply_resolution_plan(
             ),
             "notes": [
                 *snapshot.notes,
-                f"Entity resolution plan {plan.plan_id} applied in-memory.",
+                f"Entity resolution plan {plan.plan_id} proposed in-memory.",
             ],
         }
     )
-    applied = not plan.dry_run
-    if plan.dry_run:
-        after = before.model_copy(deep=True)
+    after = OrganizationSnapshot.model_validate(proposed.model_dump(mode="python"))
     rollback_token = hashlib.sha256(
         f"{plan.plan_id}\x00{before.content_sha256()}".encode("utf-8")
     ).hexdigest()
     return EntityResolutionMutationResult(
         plan_id=plan.plan_id,
-        applied=applied,
+        applied=not plan.dry_run,
         before_snapshot=before,
         after_snapshot=after,
         rollback_token=rollback_token,
         changed_entity_ids=sorted(changed_entities),
         changed_relationship_ids=sorted(changed_relationships),
         limitations=[
-            "Entity merge/split changes graph representation only; they never validate ownership.",
-            "The caller must persist the returned snapshot transactionally after reviewing the dry run.",
-            "Rollback requires the exact result and token and restores the complete prior snapshot."
+            "Entity merge/split changes graph representation only; it never validates ownership.",
+            "Dry-run results contain the proposed snapshot but must not be persisted.",
+            "The caller must persist approved non-dry-run results transactionally.",
+            "Rollback requires the exact result and token and restores the complete prior snapshot.",
         ],
     )
 
