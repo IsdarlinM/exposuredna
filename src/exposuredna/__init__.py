@@ -1,5 +1,15 @@
 """Exposure DNA organization security knowledge graph."""
 
+from .interchange import (
+    EntityMergeOperation,
+    EntityResolutionMutationPlan,
+    EntityResolutionMutationResult,
+    EntitySplitOperation,
+    apply_resolution_plan,
+    export_snapshot_graphml,
+    export_snapshot_jsonld,
+    rollback_resolution_plan,
+)
 from .resolution import (
     HumanResolutionDecision,
     NegativeConstraint,
@@ -22,6 +32,10 @@ from .snapshots import (
 )
 
 __all__ = [
+    "EntityMergeOperation",
+    "EntityResolutionMutationPlan",
+    "EntityResolutionMutationResult",
+    "EntitySplitOperation",
     "HumanResolutionDecision",
     "NegativeConstraint",
     "OrganizationSnapshot",
@@ -36,7 +50,11 @@ __all__ = [
     "SnapshotRelationship",
     "acquisition_lineage",
     "apply_human_review",
+    "apply_resolution_plan",
     "diff_snapshots",
     "evaluate_resolution",
+    "export_snapshot_graphml",
+    "export_snapshot_jsonld",
+    "rollback_resolution_plan",
 ]
 __version__ = "0.3.0"
