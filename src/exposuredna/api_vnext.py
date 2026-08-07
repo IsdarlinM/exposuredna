@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Literal
 
 from fastapi import APIRouter, FastAPI, HTTPException
@@ -149,7 +150,7 @@ async def resolution_rollback(request: ResolutionRollbackRequest) -> dict[str, o
     }
 
 
-def create_app() -> FastAPI:
-    app = create_base_app()
+def create_app(workspace: Path) -> FastAPI:
+    app = create_base_app(workspace)
     app.include_router(router)
     return app
