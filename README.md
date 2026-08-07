@@ -2,29 +2,38 @@
 
 ```text
 Exposure DNA
-imr :: v0.2.0
+imr :: v0.3.0
 ```
 
-Organization Security Knowledge Graph for correlating infrastructure, identity, software, APIs, history, trust and developer ecosystem evidence without asserting ownership from similarity alone.
+Organization Security Knowledge Graph for correlating infrastructure, identity, software, APIs, history, trust and developer-ecosystem evidence without asserting ownership from similarity alone.
 
 > **AI proposes. Evidence proves. Humans control.**
 
-## What works in v0.2.0
+## Implemented
 
 - organization workspaces and typed DNA dimensions;
 - temporal entities and explicit relationships with evidence/counter-evidence;
-- explainable entity-resolution queue using shared signals such as OAuth issuer, SDK lineage, analytics/certificate/ASN/repository metadata;
-- conflicting evidence lowers confidence and all inferred relationships remain `INFERRED`;
+- explainable entity-resolution queue for OAuth issuer, SDK lineage, analytics, certificate, ASN, repository and package metadata;
 - graph, timeline, DNA dimension summaries, explain and export;
-- passive JSON ingestion; no autonomous Internet-wide crawling;
-- local FastAPI + responsive DNA/knowledge-graph summary Web UI;
-- offline synthetic demo, scope checks, plugin inspection, AI-disabled mode and signed-update primitive through SRIC;
-- source-diversity-aware entity resolution and evidence-completeness coverage by DNA dimension (never a risk score);
-- explicit organization/acquisition lineage, organization comparison without ownership claims and human-controlled resolution decisions;
-- cross-project correlation preserving source/status/evidence plus passive adapters for CT, DNS, repos, packages, OAuth, analytics, ASN, OpenAPI and mobile exports;
-- SRIC 0.3 jobs/SSE, evidence lineage, notebook/search and shared temporal graph primitives.
+- passive JSON ingestion with no autonomous Internet-wide crawling;
+- local FastAPI API and responsive knowledge-graph Web UI;
+- source-diversity-aware resolution and evidence-completeness coverage by DNA dimension, never a risk score;
+- organization/acquisition lineage, organization comparison without ownership claims and human-controlled resolution decisions;
+- passive CT, DNS, repository, package, OAuth, analytics, ASN, OpenAPI and mobile-export adapters;
+- SRIC 0.4.1 graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence calibration.
 
-## Five-minute start
+## Entity resolution v2
+
+Exposure DNA now models positive and negative contributions explicitly. Negative controls include shared hosting and ASN, CDN/cloud infrastructure, wildcard certificates, common analytics/OAuth providers, repository forks, copied code, white-label applications, outsourced development, package namespace collisions, historical ownership, domain transfers and temporal conflicts.
+
+Signals sharing one upstream source are deduplicated. Specificity, exclusivity, source quality and temporal relevance are visible in the confidence breakdown. Similarity never establishes ownership:
+
+- weak or ambiguous candidates remain `UNKNOWN`;
+- sufficiently supported relationships may remain `INFERRED`;
+- correlation and human review cannot create `VALIDATED` ownership;
+- counter-evidence and alternative explanations remain attached to the candidate.
+
+## Quickstart
 
 ```bash
 exposuredna doctor
@@ -42,18 +51,16 @@ exposuredna import lab examples/lab/organization.json
 exposuredna correlate lab
 ```
 
-## Ownership rule
+## Local release gate
 
-Similarity never establishes ownership. Resolution candidates expose supporting signals, conflicting evidence, source diversity/temporal context and confidence; they remain `INFERRED` until reviewed with stronger evidence.
+Exposure DNA does not require hosted CI:
 
-## Safety and privacy
+```bash
+python -m pip install -e ../sric-core
+python -m pip install -e '.[dev]'
+python scripts/release-gate.py
+```
 
-Passive/local workflows are the default. Telemetry, cloud AI and external uploads are off unless explicitly configured.
+Machine-readable evidence and artifact hashes are written under `build/release-evidence/`. A release requires a complete `PASS` report for the exact source commit.
 
-## Documentation
-
-See `docs/` and `ROADMAP.md` for architecture, security, CLI, formats, AI/plugins, integrations and deferred collectors.
-
-## License
-
-Apache-2.0.
+Passive/local workflows are the default. Telemetry, cloud AI and external uploads are off unless explicitly configured. Apache-2.0.
