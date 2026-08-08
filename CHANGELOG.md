@@ -6,6 +6,9 @@
 - Added conservative conflict detection for overlapping explicitly-exclusive ownership/operation claims; conflicts remain `UNKNOWN` and retain supporting/counter-evidence.
 - Preserved the rule that temporal entity resolution cannot create `VALIDATED` ownership.
 - Updated SRIC compatibility to the Sentinel Forge 0.5 release train.
+- Added standalone capability discovery with no mandatory sibling-product dependencies.
+- Reworked Linux/Windows installation to resolve SRIC 0.5 automatically and removed silent adjacent-repository discovery.
+- Added standalone CLI/API/Web contracts, recursive parser/help tests, clean-install smokes and data-preserving Linux uninstall behavior.
 - Added regression tests for historical relationship expiry and overlapping exclusive ownership claims.
 
 ## 0.3.0 - 2026-08-06
