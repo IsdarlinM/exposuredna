@@ -71,4 +71,4 @@ __all__ = [
     "relationship_at",
     "rollback_resolution_plan",
 ]
-__version__ = "0.5.0"
+__version__ = "0.5.1"
