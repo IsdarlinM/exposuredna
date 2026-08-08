@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.1 - 2026-08-08
+- Fixed clean installation when `sric-core` is not published on PyPI.
+- Added a first-party dependency manifest pinned to the exact SRIC Core 0.5.1 GitHub commit.
+- Added a Python 3.11 runtime lock and made Windows/Linux installers bootstrap first-party dependencies before product installation.
+- Preserved `SRIC_CORE_SOURCE` as an explicit development override.
+- Updated the SRIC dependency floor to 0.5.1 and added standalone installer contract regression coverage.
+
 ## 0.5.0 - 2026-08-08
 - Added Organization Era and temporal relationship modeling so historical ownership/operation evidence is bounded by explicit validity intervals.
 - Added `relationship_at()` views that return `UNKNOWN` outside an evidenced time interval instead of propagating historical relationships into the present.
