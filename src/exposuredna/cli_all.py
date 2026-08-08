@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 
+from . import cli_eras as _cli_eras  # noqa: F401
 from . import cli_interchange as _cli_interchange  # noqa: F401
 from . import cli_runtime as _runtime
 from .api_vnext import create_app as create_vnext_app
