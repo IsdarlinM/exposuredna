@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
@@ -7,6 +8,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel, ConfigDict
 
 from .api import create_app as create_base_app
+from .eras import TemporalRelationshipClaim, detect_temporal_conflicts, relationship_at
 from .interchange import (
     EntityResolutionMutationPlan,
     EntityResolutionMutationResult,
@@ -58,6 +60,17 @@ class ResolutionRollbackRequest(BaseModel):
     rollback_token: str
 
 
+class TemporalRelationshipViewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    relationship: TemporalRelationshipClaim
+    at: datetime
+
+
+class TemporalConflictRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    relationships: list[TemporalRelationshipClaim]
+
+
 router = APIRouter(prefix="/api/v1/analysis", tags=["analysis"])
 
 
@@ -72,6 +85,30 @@ async def resolution_evaluate(request: ResolutionRequest) -> dict[str, object]:
     )
     return {
         "candidate": candidate.model_dump(mode="json"),
+        "ownership_validated": False,
+        "validated_findings_created": 0,
+    }
+
+
+@router.post("/relationships/at")
+async def temporal_relationship_view(
+    request: TemporalRelationshipViewRequest,
+) -> dict[str, object]:
+    view = relationship_at(request.relationship, request.at)
+    return {
+        "view": view.model_dump(mode="json"),
+        "ownership_validated": False,
+        "historical_relationship_projected_forward": False,
+    }
+
+
+@router.post("/relationships/conflicts")
+async def temporal_relationship_conflicts(
+    request: TemporalConflictRequest,
+) -> dict[str, object]:
+    conflicts = detect_temporal_conflicts(request.relationships)
+    return {
+        "conflicts": [item.model_dump(mode="json") for item in conflicts],
         "ownership_validated": False,
         "validated_findings_created": 0,
     }

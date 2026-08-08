@@ -1,5 +1,6 @@
 @echo off
 setlocal EnableExtensions
+set "PROJECT=Exposure DNA"
 set "CMD=exposuredna"
 set "SCRIPT_DIR=%~dp0"
 for %%I in ("%SCRIPT_DIR%..") do set "REPO_ROOT=%%~fI"
@@ -14,14 +15,16 @@ if not exist "%INSTALL_ROOT%" mkdir "%INSTALL_ROOT%"
 if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
 if not exist "%VENV%\Scripts\python.exe" %PY_CMD% -m venv "%VENV%" || exit /b 1
 "%VENV%\Scripts\python.exe" -m pip install --upgrade pip || exit /b 1
-set "SRIC_SOURCE=%SRIC_CORE_SOURCE%"
-if not defined SRIC_SOURCE if exist "%REPO_ROOT%\..\sric-core\pyproject.toml" set "SRIC_SOURCE=%REPO_ROOT%\..\sric-core"
-if defined SRIC_SOURCE ("%VENV%\Scripts\python.exe" -m pip install --upgrade "%SRIC_SOURCE%" || exit /b 3) else ("%VENV%\Scripts\python.exe" -m pip install "sric-core>=0.3,<0.4" || exit /b 3)
-"%VENV%\Scripts\python.exe" -m pip install --upgrade "%REPO_ROOT%" || exit /b 1
+if defined SRIC_CORE_SOURCE (
+  if not exist "%SRIC_CORE_SOURCE%\pyproject.toml" (echo SRIC_CORE_SOURCE is invalid.& exit /b 3)
+  "%VENV%\Scripts\python.exe" -m pip install --upgrade "%SRIC_CORE_SOURCE%" || exit /b 3
+)
+"%VENV%\Scripts\python.exe" -m pip install --upgrade "%REPO_ROOT%" || (echo Installation failed. Exposure DNA requires sric-core 0.5.x and resolves it automatically.& exit /b 3)
 >"%BIN_DIR%\%CMD%.cmd" echo @"%VENV%\Scripts\%CMD%.exe" %%*
 for /f "tokens=2,*" %%A in ('reg query HKCU\Environment /v Path 2^>nul ^| findstr /I "Path"') do set "USER_PATH=%%B"
 echo ;%USER_PATH%; | find /I ";%BIN_DIR%;" >nul
 if errorlevel 1 (if defined USER_PATH (setx PATH "%USER_PATH%;%BIN_DIR%" >nul) else (setx PATH "%BIN_DIR%" >nul))
 "%VENV%\Scripts\%CMD%.exe" doctor || exit /b 1
-echo Exposure DNA installed successfully. Open a new Command Prompt and run: %CMD% --help
+"%VENV%\Scripts\%CMD%.exe" capabilities || exit /b 1
+echo %PROJECT% installed successfully in standalone mode.
 exit /b 0
