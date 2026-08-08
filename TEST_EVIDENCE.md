@@ -1,46 +1,30 @@
-# Test Evidence — Exposure DNA v0.3.0
+# Test Evidence — Exposure DNA v0.5.0 Release Candidate
 
-## QA pass — 2026-08-07
+## Release-candidate review — 2026-08-08
 
-Freshly executed in the current local runtime:
+The `agent/release-0.5.0` branch contains the Exposure DNA 0.5 changes under review:
 
-- Sentinel Forge cross-product high-risk regression matrix including Exposure DNA entity-resolution/rollback logic: **7/7 matrix tests passed**;
-- Python `compileall` over the reconstructed corrected modules: **PASS**;
-- branch comparison against `main`: branch is ahead and **0 commits behind** at the time of this audit.
+- SRIC 0.5 compatibility;
+- Organization Era and temporal relationship modeling;
+- historical relationships returning `UNKNOWN` outside their evidenced validity interval;
+- conservative `UNKNOWN` conflicts for overlapping explicitly-exclusive ownership/operation claims;
+- no automatic `VALIDATED` ownership from temporal entity resolution;
+- 0.5 regression tests and standardized release-evidence gate v2.
 
-Current-source review and regression coverage include:
+## Fresh execution status
 
-- SRIC 0.4.1 compatibility;
-- positive/negative entity-resolution evidence without automatic ownership validation;
-- organization snapshot integrity and temporal diff without risk score;
-- empty/ambiguous merge/split plan rejection;
-- hostile existing merge metadata handling;
-- self-loop prevention;
-- dry-run returning the proposed graph preview without persistence;
-- complete split relationship assignment and rollback-token validation;
-- JSON-LD/GraphML export preserving evidence/status;
-- snapshot export, guarded resolution plan and rollback endpoints in the workspace-bound vNext API;
-- controlled 403/422 errors instead of server exceptions;
-- complete CLI entrypoint registration for export/plan/rollback;
-- `--apply` requiring `--approve` and controlled CLI file/model errors;
-- recursive help-path coverage;
-- `exposuredna web` serving the same vNext API and CSP-protected UI;
-- public Python exports for snapshot/interchange/reversible resolution primitives.
+**THE COMPLETE v0.5.0 RELEASE GATE HAS NOT BEEN EXECUTED SUCCESSFULLY FOR THIS BRANCH.**
 
-## Current release-gate status
+The private repository cannot be mounted as a complete local checkout in this runtime. GitHub Actions currently ends in `startup_failure` before any test job starts; this is an infrastructure blocker, not test evidence.
 
-**FULL CURRENT REPOSITORY GATE NOT EXECUTABLE IN THIS RUNTIME.**
+## Required release evidence
 
-The private repository cannot be materialized as a complete local checkout from the connector, and Ruff, mypy, `build` and `pip-audit` are unavailable from the runtime/index. No GitHub Actions, Codespaces or paid/hosted GitHub execution was used.
-
-Do not describe v0.3.0 as a fully validated release until the exact commit produces `PASS` from a complete local sibling checkout:
+Run from sibling 0.5 checkouts:
 
 ```bash
-python -m pip install -e ../sric-core
-python -m pip install -e '.[dev]'
-python scripts/release-gate.py
+python sric-core/scripts/release-ecosystem.py --root .
 ```
 
-## Previous baseline
+Do not merge/tag Exposure DNA 0.5 until its exact-commit `release-gate.json` and the cross-product `ecosystem-release-gate.json` both report `PASS`.
 
-Exposure DNA v0.2.0 did not have an equivalent root release-evidence record. Existing historical unit/integration/security/fuzz/E2E files are not promoted as proof that the old full suite ran.
+Previous 0.2/0.3 evidence remains a historical regression baseline only.
