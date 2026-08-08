@@ -2,7 +2,7 @@
 
 ```text
 Exposure DNA
-imr :: v0.5.0
+IsdarlinM :: v0.5.2
 ```
 
 Organization Security Knowledge Graph for correlating infrastructure, identity, software, APIs, history, trust and developer-ecosystem evidence without asserting ownership from similarity alone.
@@ -30,7 +30,8 @@ exposuredna capabilities
 - source-diversity-aware resolution and evidence-completeness coverage by DNA dimension, never a risk score;
 - organization/acquisition lineage and human-controlled resolution decisions;
 - passive CT, DNS, repository, package, OAuth, analytics, ASN, OpenAPI and mobile-export adapters;
-- SRIC 0.5.x graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence primitives.
+- SRIC 0.5.x graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence primitives;
+- professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
 
 ## Entity resolution semantics
 
@@ -55,6 +56,10 @@ exposuredna capabilities
 ```
 
 The installer resolves SRIC automatically. `SRIC_CORE_SOURCE` is only an explicit development/release-validation override.
+
+## CLI presentation
+
+Interactive terminals display a compact subdued-green banner with a short organization-security correlation description and `IsdarlinM :: v0.5.2`. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
 
 ## Quickstart
 
