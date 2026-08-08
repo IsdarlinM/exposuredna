@@ -9,10 +9,6 @@ from sric.models import ClaimStatus
 from .resolution import RelationshipType
 
 
-def utcnow() -> datetime:
-    return datetime.now(timezone.utc)
-
-
 def _aware(value: datetime) -> datetime:
     return value if value.tzinfo is not None else value.replace(tzinfo=timezone.utc)
 
@@ -43,7 +39,7 @@ class OrganizationEra(BaseModel):
     def validate_interval_and_status(self) -> "OrganizationEra":
         if self.valid_to is not None and _aware(self.valid_to) < _aware(self.valid_from):
             raise ValueError("valid_to must not precede valid_from")
-        if self.status is ClaimStatus.VALIDATED:
+        if self.status == ClaimStatus.VALIDATED:
             raise ValueError("organization-era modeling cannot create VALIDATED ownership")
         return self
 
@@ -67,7 +63,7 @@ class TemporalRelationshipClaim(BaseModel):
     def validate_semantics(self) -> "TemporalRelationshipClaim":
         if self.valid_to is not None and _aware(self.valid_to) < _aware(self.valid_from):
             raise ValueError("valid_to must not precede valid_from")
-        if self.status is ClaimStatus.VALIDATED:
+        if self.status == ClaimStatus.VALIDATED:
             raise ValueError("temporal entity resolution cannot create VALIDATED ownership")
         return self
 
@@ -96,7 +92,7 @@ class TemporalRelationshipConflict(BaseModel):
 
     @model_validator(mode="after")
     def conflict_is_uncertainty_only(self) -> "TemporalRelationshipConflict":
-        if self.status is not ClaimStatus.UNKNOWN:
+        if self.status != ClaimStatus.UNKNOWN:
             raise ValueError("temporal relationship conflicts must remain UNKNOWN")
         return self
 
@@ -139,7 +135,7 @@ def detect_temporal_conflicts(
         for right in ordered[index + 1 :]:
             if (
                 not right.exclusive
-                or right.relationship_type is not left.relationship_type
+                or right.relationship_type != left.relationship_type
                 or right.object_id != left.object_id
                 or right.subject_id == left.subject_id
             ):
