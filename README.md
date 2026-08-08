@@ -1,8 +1,10 @@
 # Exposure DNA
 
 ```text
-Exposure DNA
-IsdarlinM :: v0.5.2
+Exposure DNA :: v0.5.2
+Developer: IsdarlinM
+
+Correlate organization security relationships across time with evidence.
 ```
 
 Organization Security Knowledge Graph for correlating infrastructure, identity, software, APIs, history, trust and developer-ecosystem evidence without asserting ownership from similarity alone.
@@ -59,7 +61,7 @@ The installer resolves SRIC automatically. `SRIC_CORE_SOURCE` is only an explici
 
 ## CLI presentation
 
-Interactive terminals display a compact subdued-green banner with a short organization-security correlation description and `IsdarlinM :: v0.5.2`. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
+Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.2`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
 
 ## Quickstart
 
