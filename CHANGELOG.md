@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 - 2026-08-08
+- Added Organization Era and temporal relationship modeling so historical ownership/operation evidence is bounded by explicit validity intervals.
+- Added `relationship_at()` views that return `UNKNOWN` outside an evidenced time interval instead of propagating historical relationships into the present.
+- Added conservative conflict detection for overlapping explicitly-exclusive ownership/operation claims; conflicts remain `UNKNOWN` and retain supporting/counter-evidence.
+- Preserved the rule that temporal entity resolution cannot create `VALIDATED` ownership.
+- Updated SRIC compatibility to the Sentinel Forge 0.5 release train.
+- Added regression tests for historical relationship expiry and overlapping exclusive ownership claims.
+
 ## 0.3.0 - 2026-08-06
 - Migrated the package requirement from SRIC 0.3 to SRIC 0.4.1.
 - Added entity-resolution v2 with explainable positive and negative signal contributions.
