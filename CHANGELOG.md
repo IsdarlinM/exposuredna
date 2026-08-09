@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.9 - 2026-08-09
+- Hardened repair installation so obsolete, incomplete or broken Python environments rebuild only `~/.exposuredna/venv`, preserving organization workspaces, configuration and evidence.
+- Termux now prefers a writable `$PREFIX/bin` already present in `PATH`, making `exposuredna` immediately reachable after installation.
+- Windows PATH updates now use SRIC Core's registry-backed `sric.install_path` helper instead of `setx`, avoiding user-PATH truncation/rewrite hazards.
+- Preserved the atomic Exposure DNA + explicit first-party SRIC resolver fix and updated the immutable SRIC pin/runtime lock to SRIC Core 0.5.10.
+- Installer validation now renders the Exposure DNA banner at most once: `doctor` remains user-visible while internal capability/help smokes run with `SENTINEL_BANNER=off`.
+- Expanded installer regressions for venv-only repair, Termux path selection, safe Windows PATH handling, Python discovery, dependency integrity, help smokes and single-banner output.
+
 ## 0.5.8 - 2026-08-09
 - Fixed clean/repair installation `ResolutionImpossible` when Exposure DNA depends on the first-party `sric-core` package distributed from an immutable GitHub snapshot rather than PyPI.
 - Linux/Termux and Windows now resolve Exposure DNA plus the explicit SRIC source in one pip transaction; the installer no longer performs a product-only `--force-reinstall` that can make pip search the public index for `sric-core`.
@@ -41,7 +49,7 @@
 ## 0.5.3 - 2026-08-08
 - Added `exposuredna update --force` for explicit same-version reinstall of a trusted signed release using pip `--force-reinstall`.
 - Preserved Ed25519 manifest verification, SHA-256 wheel verification, state backup and rollback behavior.
-- `--force` may install the same or a newer signed release, never an older release; SemVer prerelease precedence is enforced by SRIC Core.
+- `--force` may install the same or a newer signed version, never an older version; SemVer prerelease precedence is enforced by SRIC Core.
 - `--check` and `--force` are mutually exclusive.
 - Updated the SRIC Core runtime floor, lock and exact first-party source pin to 0.5.3.
 - Added standalone regression coverage for the public `--force` CLI contract.
