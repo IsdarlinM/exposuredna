@@ -2,8 +2,8 @@
   "schema_version": 1,
   "product": "exposuredna",
   "repository": "IsdarlinM/exposuredna",
-  "version": "0.5.6",
-  "commit": "edf341f7a5f8ce0e5c93c068cdd54f266beec483",
-  "rollback_version": "0.5.5",
-  "rollback_commit": "c8e5830ce7abfd18be0337db9d38bce3e2980969"
+  "version": "0.5.8",
+  "commit": "06f587fa66602f6ad8929b1f376c10e51e41268b",
+  "rollback_version": "0.5.7",
+  "rollback_commit": "3b71b3dd55f38a05cc9c341f9d538a0942a067b7"
 }
