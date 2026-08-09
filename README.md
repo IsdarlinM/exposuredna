@@ -1,7 +1,7 @@
 # Exposure DNA
 
 ```text
-Exposure DNA :: v0.5.5
+Exposure DNA :: v0.5.6
 Developer: IsdarlinM
 
 Correlate organization security relationships across time with evidence.
@@ -34,7 +34,8 @@ exposuredna capabilities
 - passive CT, DNS, repository, package, OAuth, analytics, ASN, OpenAPI and mobile-export adapters;
 - SRIC 0.5.x graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence primitives;
 - zero-config official update flow with safe same-version `update --force` reinstall support;
-- Web Command Console with exact public CLI command-tree parity and real-time jobs;
+- full Web Feature Workbench with every public Exposure DNA CLI command and argument represented as structured responsive controls;
+- advanced Web Command Console with exact public CLI command-tree parity and real-time jobs;
 - professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
 
 ## Entity resolution semantics
@@ -63,7 +64,7 @@ The installer resolves SRIC automatically. `SRIC_CORE_SOURCE` is only an explici
 
 ## CLI presentation
 
-Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.5`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
+Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.6`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
 
 ## Quickstart
 
@@ -79,13 +80,11 @@ exposuredna web demo
 
 ## Web and API
 
-Exposure DNA provides a responsive knowledge-graph Web UI and local API. `/console` adds the Web Command Console, whose catalog is generated from `exposuredna.cli_all`; a standalone test requires the Web and CLI command-path sets to be exactly equal.
+The native knowledge-graph dashboard remains the quick view and now exposes **All Features** (`/workbench`) and **Advanced Console** (`/console`) directly. The Workbench is generated from `exposuredna.cli_all`, so every public command and every ordered CLI parameter has a structured responsive Web representation.
 
-The console is **not an operating-system web shell**. It invokes only the fixed SRIC runner with `shell=False`, disabled stdin and a structured argv array. Mutating commands require explicit approval; evidence, temporal and human-review semantics remain authoritative. See `docs/web/cli-parity.md`.
+The Workbench uses the fixed SRIC runner with `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs and SSE output. Evidence, temporal and human-review semantics remain authoritative: correlation cannot create validated ownership and Web convenience cannot bypass that rule.
 
 ## Updates
-
-The official update path is zero-config:
 
 ```bash
 exposuredna update --check
@@ -93,11 +92,7 @@ exposuredna update
 exposuredna update --force
 ```
 
-Normal users do **not** provide a manifest or public key. SRIC resolves only the fixed official `IsdarlinM/exposuredna` channel, requires the selected immutable release commit to be reported by GitHub as signature-verified, validates the exact source snapshot and package metadata, backs up state, installs without a shell, and verifies the installed distribution version.
-
-`--force` reinstalls the official release even when that exact version is already installed. It may install a newer official release but never downgrades; `--check` and `--force` cannot be combined. Normal upgrades require rollback metadata; same-version forced reinstalls use the verified target snapshot as the recovery package.
-
-`--manifest` and `--public-key` remain available together only as an advanced custom/private-channel override. Custom channels retain Ed25519 manifest and SHA-256 wheel verification. No blind `git pull` fallback is used. See `docs/release/update.md`.
+The official path is zero-config. `--force` may reinstall the current official version or move forward, never downgrade. Custom `--manifest` plus `--public-key` remains an advanced signed-channel override.
 
 ## Validation gates
 
@@ -105,6 +100,8 @@ Normal users do **not** provide a manifest or public key. SRIC resolves only the
 python -m sric.standalone_gate --root .
 python scripts/release-gate.py
 ```
+
+The 0.5.6 interface suite walks every public Exposure DNA command with `--help`, verifies every option and required argument, compares the complete ordered CLI parameter tree with the Workbench catalog, verifies native Dashboard / All Features / Advanced Console navigation, and smoke-tests graph, DNA, resolution queue, lineage, external correlations, jobs and notebook APIs. Destructive operations are gate-tested rather than executed solely for coverage.
 
 Machine-readable evidence is written below `build/release-evidence/`; a release requires PASS for the exact commit.
 
