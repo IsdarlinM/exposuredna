@@ -14,4 +14,4 @@ __all__ = [
     "apply_resolution_plan", "detect_temporal_conflicts", "diff_snapshots", "evaluate_resolution",
     "export_snapshot_graphml", "export_snapshot_jsonld", "relationship_at", "rollback_resolution_plan",
 ]
-__version__ = "0.5.7"
+__version__ = "0.5.8"
