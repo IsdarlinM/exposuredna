@@ -1,11 +1,9 @@
-# Web/CLI capability parity
+# Web/CLI feature parity
 
-Exposure DNA 0.5.4 mounts the shared SRIC 0.5.4 Web Command Console at `/console`.
+Exposure DNA 0.5.6 mounts the shared SRIC Web Feature Workbench at `/workbench` and retains `/console` as an advanced argv-oriented surface.
 
-The console discovers `exposuredna.cli_all` at runtime and exposes the same public command tree, including nested commands, through a responsive same-origin UI and `/api/v1/console/*` API. A standalone regression test requires the Web catalog and CLI catalog to be exactly equal.
+The native organization knowledge-graph dashboard exposes **All Features** and **Advanced Console** navigation. The Workbench derives its schema from `exposuredna.cli_all`, so every public command and ordered CLI parameter has a structured responsive Web control. `/api/v1/workbench/coverage` reports exact parity.
 
-This is not an operating-system shell. Execution uses the fixed `sric.web_console_runner`, `shell=False`, disabled stdin and an argv array. The browser cannot choose an executable. Mutating commands require explicit approval; destructive command names require an approval phrase. Exposure DNA evidence, temporal and human-review semantics remain authoritative; correlation never becomes validated ownership merely because it was invoked from the Web UI.
+Execution uses the fixed `sric.web_console_runner` with `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs and SSE output. Evidence, temporal and human-review semantics remain authoritative; Web correlation cannot manufacture validated ownership.
 
-Arguments and retained output are redacted, output is rendered as untrusted text, console jobs are cancellable and output/status is streamed with SSE. Commands requiring interactive stdin must use their explicit CLI flags in the Web argument field.
-
-See the shared SRIC document `docs/web/cli-parity.md` for the complete execution and security contract.
+The release tests invoke help for every public command, verify all options/required arguments, compare the complete ordered CLI parameter tree with the Workbench schema, verify native navigation and smoke-test graph/DNA/resolution/lineage APIs. Destructive actions are gate-tested rather than executed merely for coverage.
