@@ -1,7 +1,7 @@
 # Exposure DNA
 
 ```text
-Exposure DNA :: v0.5.3
+Exposure DNA :: v0.5.4
 Developer: IsdarlinM
 
 Correlate organization security relationships across time with evidence.
@@ -34,6 +34,7 @@ exposuredna capabilities
 - passive CT, DNS, repository, package, OAuth, analytics, ASN, OpenAPI and mobile-export adapters;
 - SRIC 0.5.x graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence primitives;
 - signed update flow with safe same-version `update --force` reinstall support;
+- Web Command Console with exact public CLI command-tree parity and real-time jobs;
 - professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
 
 ## Entity resolution semantics
@@ -62,7 +63,7 @@ The installer resolves SRIC automatically. `SRIC_CORE_SOURCE` is only an explici
 
 ## CLI presentation
 
-Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.3`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
+Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.4`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation. The banner is emitted to interactive stderr so JSON and redirected stdout remain clean. See `docs/cli-presentation.md`.
 
 ## Quickstart
 
@@ -78,7 +79,9 @@ exposuredna web demo
 
 ## Web and API
 
-Exposure DNA provides a responsive knowledge-graph Web UI and local API. It is **not an operating-system web shell**.
+Exposure DNA provides a responsive knowledge-graph Web UI and local API. `/console` adds the Web Command Console, whose catalog is generated from `exposuredna.cli_all`; a standalone test requires the Web and CLI command-path sets to be exactly equal.
+
+The console is **not an operating-system web shell**. It invokes only the fixed SRIC runner with `shell=False`, disabled stdin and a structured argv array. Mutating commands require explicit approval; evidence, temporal and human-review semantics remain authoritative. See `docs/web/cli-parity.md`.
 
 ## Signed updates
 

@@ -1,12 +1,13 @@
 from typer.main import get_command
 
+from exposuredna import __version__
 from exposuredna.cli_all import BRAND, app
 from sric.cli_style import build_banner
 
 
 def test_exposure_dna_brand_identity() -> None:
     banner = build_banner(BRAND)
-    product = banner.index("Exposure DNA :: v0.5.3")
+    product = banner.index(f"Exposure DNA :: v{__version__}")
     developer = banner.index("Developer: IsdarlinM")
     description = banner.index("organization security relationships")
     assert product < developer < description
