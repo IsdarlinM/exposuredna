@@ -1,7 +1,7 @@
 # Exposure DNA
 
 ```text
-Exposure DNA :: v0.5.8
+Exposure DNA :: v0.5.10
 Developer: IsdarlinM
 
 Correlate organization security relationships across time with evidence.
@@ -36,6 +36,7 @@ exposuredna capabilities
 - zero-config official update flow with same-version `update --force`, rollback and first-party runtime repair;
 - exact SRIC version/module diagnostics in `doctor` and `/api/v1/runtime-compatibility`;
 - full Web Feature Workbench with every public Exposure DNA CLI command and argument represented as structured responsive controls;
+- JSON-safe shared Web command catalog generation from SRIC 0.5.11;
 - lazy shared-Web loading and actionable degraded Workbench 503 behavior so a missing shared UI module cannot crash the entire CLI;
 - advanced Web Command Console with exact public CLI command-tree parity and real-time jobs;
 - professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
@@ -62,13 +63,17 @@ exposuredna doctor
 exposuredna capabilities
 ```
 
-The normal installer pins SRIC Core to an immutable GitHub commit and resolves that explicit first-party source **in the same pip transaction as Exposure DNA**. Because `sric-core` is intentionally not discovered from PyPI, the installer no longer performs a later product-only `--force-reinstall` that can trigger `ResolutionImpossible`. `SRIC_CORE_SOURCE=/path/to/sric-core` remains an explicit development/release-validation override.
+The normal installer pins SRIC Core to an immutable GitHub commit and resolves that explicit first-party source **in the same pip transaction as Exposure DNA**. Because `sric-core` is intentionally not discovered from PyPI, the installer does not perform a later product-only reinstall that can trigger `ResolutionImpossible`. `SRIC_CORE_SOURCE=/path/to/sric-core` remains an explicit development/release-validation override.
 
-The repair path preserves workspaces and evidence. It bootstraps `pip`, `setuptools` and `wheel`, force-reinstalls constrained Exposure DNA plus the explicit SRIC source, runs `pip check`, verifies `sric.web_console` and `sric.web_workbench`, checks the supported SRIC version range, and runs doctor/capability plus `--help`, `-h` and `help` smokes. Linux persists a valid `$HOME/.local/bin` PATH entry without literal quote characters; Windows accepts any Python 3 interpreter that satisfies `>=3.11`.
+The repair path preserves workspaces and evidence. It validates host Python and any existing runtime interpreter; a stale, incomplete or broken environment rebuilds only `~/.exposuredna/venv`. It bootstraps `pip`, `setuptools` and `wheel`, resolves constrained Exposure DNA plus the explicit SRIC source, runs `pip check`, verifies `sric.web_console`, `sric.web_workbench` and `sric.web_catalog`, requires SRIC `>=0.5.11,<0.6`, and runs doctor/capability plus `--help`, `-h` and `help` smokes.
+
+Installer-internal smokes use `SENTINEL_BANNER=never` and a temporary validation log. Successful installation no longer repeats the Exposure DNA banner; captured diagnostics are printed only if validation fails. Normal installation does not use `--force-reinstall`.
+
+On Termux, a writable `$PREFIX/bin` already present in `PATH` is preferred so `exposuredna` becomes immediately reachable. Standard Linux falls back to `~/.local/bin`. Windows uses SRIC's registry-backed `sric.install_path` helper instead of `setx`; any Python 3 interpreter satisfying `>=3.11` is accepted.
 
 ## CLI presentation
 
-Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.8`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
+Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.10`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
 
 The help contract covers `exposuredna --help`, `exposuredna -h`, `exposuredna help`, `exposuredna COMMAND --help`, `exposuredna COMMAND -h` and `exposuredna COMMAND help`.
 
@@ -88,7 +93,7 @@ exposuredna web demo
 
 The native knowledge-graph dashboard remains the quick view and exposes **All Features** (`/workbench`) and **Advanced Console** (`/console`) directly. The Workbench is generated from `exposuredna.cli_all`, so every public command and every ordered CLI parameter has a structured responsive Web representation. `/api/v1/runtime-compatibility` exposes exact shared-runtime status.
 
-Shared Web modules are loaded lazily. A stale/corrupt SRIC therefore cannot make every Exposure DNA command fail merely because a shared UI module is absent; the native application remains reachable and the unavailable Workbench returns an actionable `RUNTIME_INCOMPATIBLE` 503.
+SRIC 0.5.11 normalizes command metadata to deterministic JSON-safe primitives before FastAPI serialization, preventing unusual CLI defaults/metadata from producing an opaque catalog HTTP 500. Shared Web modules are loaded lazily; a stale/corrupt SRIC therefore cannot make every Exposure DNA command fail merely because a shared UI module is absent.
 
 The Workbench uses the fixed SRIC runner with `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs and SSE output. Evidence, temporal and human-review semantics remain authoritative: correlation cannot create validated ownership and Web convenience cannot bypass that rule.
 
@@ -111,7 +116,7 @@ python -m sric.standalone_gate --root .
 python scripts/release-gate.py
 ```
 
-The 0.5.8 installer regression verifies the unpublished-first-party resolver topology, immutable SRIC pin, runtime lock, Linux PATH quoting, Windows Python discovery and dependency/import/help smokes. Existing runtime/interface and unit/integration/E2E/security suites continue to cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters and ownership-safety semantics. Destructive operations are gate-tested rather than executed solely for coverage.
+The 0.5.10 installer regression verifies atomic first-party resolution, signed SRIC 0.5.11 pin/lock, venv-only repair, Termux `$PREFIX/bin`, safe Windows PATH handling, quiet installer smokes and dependency/import/help checks. Web regressions require Console/Workbench catalogs to return HTTP 200 with non-empty command/feature sets and complete CLI/Web coverage. Existing runtime/interface and unit/integration/E2E/security suites continue to cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters and ownership-safety semantics. Destructive operations are gate-tested rather than executed solely for coverage.
 
 Machine-readable evidence is written below `build/release-evidence/`; a release requires PASS for the exact commit.
 
