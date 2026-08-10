@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.11 - 2026-08-09
+- Fixed shared Web asset rendering under the native Exposure DNA CSP: `/console` and `/workbench` now explicitly allow same-origin CSS/JS while retaining restrictive object/base/frame policies.
+- Added a regression that checks the actual CSP on both shared Web pages and verifies `/console/styles.css` is reachable.
+- Preserved SRIC 0.5.11 JSON-safe catalogs, evidence/temporal/human-review semantics, fixed-runner execution and installer hardening unchanged.
+
 ## 0.5.10 - 2026-08-09
 - Adopted signed SRIC Core 0.5.11 and its JSON-safe Web command catalog while preserving Exposure DNA temporal/evidence/human-review ownership semantics.
 - Kept normal Linux/Termux/Windows installation atomic and idempotent with no `--force-reinstall`; forced reinstall remains explicit to repair/update workflows.
@@ -26,7 +31,7 @@
 - Fixed first-party runtime drift that could install a newer Exposure DNA beside an older SRIC and fail on shared Web-module imports before command dispatch.
 - Added exact SRIC distribution/module diagnostics, lazy shared-Web imports, `/api/v1/runtime-compatibility`, and actionable degraded Workbench 503 responses.
 - Official updates repair supported stale/corrupt SRIC 0.5.x runtimes through immutable GitHub-signature-verified transition snapshots before updating Exposure DNA.
-- Linux/Windows installers now force-reinstall pinned first-party dependencies and Exposure DNA, run `pip check`, import-probe Web Console/Workbench and execute doctor/capability/help smokes.
+- Linux/Windows installers force-reinstall pinned first-party dependencies and Exposure DNA, run `pip check`, import-probe Web Console/Workbench and execute doctor/capability/help smokes.
 - Added regressions for stale/missing Workbench runtimes, signed transition chain, same-version repair, every public CLI help form and exact ordered CLI/Web parameter parity while preserving evidence/temporal/human-review semantics.
 - New installs pin signed SRIC Core 0.5.8.
 
