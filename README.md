@@ -1,7 +1,7 @@
 # Exposure DNA
 
 ```text
-Exposure DNA :: v0.5.10
+Exposure DNA :: v0.5.11
 Developer: IsdarlinM
 
 Correlate organization security relationships across time with evidence.
@@ -37,6 +37,7 @@ exposuredna capabilities
 - exact SRIC version/module diagnostics in `doctor` and `/api/v1/runtime-compatibility`;
 - full Web Feature Workbench with every public Exposure DNA CLI command and argument represented as structured responsive controls;
 - JSON-safe shared Web command catalog generation from SRIC 0.5.11;
+- shared-route CSP permitting same-origin Console/Workbench CSS/JS while retaining restrictive object/base/frame policies;
 - lazy shared-Web loading and actionable degraded Workbench 503 behavior so a missing shared UI module cannot crash the entire CLI;
 - advanced Web Command Console with exact public CLI command-tree parity and real-time jobs;
 - professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
@@ -73,7 +74,7 @@ On Termux, a writable `$PREFIX/bin` already present in `PATH` is preferred so `e
 
 ## CLI presentation
 
-Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.10`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
+Interactive terminals display a compact subdued-green banner ordered as `Exposure DNA :: v0.5.11`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
 
 The help contract covers `exposuredna --help`, `exposuredna -h`, `exposuredna help`, `exposuredna COMMAND --help`, `exposuredna COMMAND -h` and `exposuredna COMMAND help`.
 
@@ -94,6 +95,8 @@ exposuredna web demo
 The native knowledge-graph dashboard remains the quick view and exposes **All Features** (`/workbench`) and **Advanced Console** (`/console`) directly. The Workbench is generated from `exposuredna.cli_all`, so every public command and every ordered CLI parameter has a structured responsive Web representation. `/api/v1/runtime-compatibility` exposes exact shared-runtime status.
 
 SRIC 0.5.11 normalizes command metadata to deterministic JSON-safe primitives before FastAPI serialization, preventing unusual CLI defaults/metadata from producing an opaque catalog HTTP 500. Shared Web modules are loaded lazily; a stale/corrupt SRIC therefore cannot make every Exposure DNA command fail merely because a shared UI module is absent.
+
+For `/console` and `/workbench`, Exposure DNA overrides the native dashboard CSP with a shared-route policy that explicitly allows `style-src 'self' 'unsafe-inline'` and `script-src 'self'`; this permits the same-origin SRIC stylesheet and script while preserving `object-src 'none'`, `base-uri 'none'` and `frame-ancestors 'none'`.
 
 The Workbench uses the fixed SRIC runner with `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs and SSE output. Evidence, temporal and human-review semantics remain authoritative: correlation cannot create validated ownership and Web convenience cannot bypass that rule.
 
@@ -116,7 +119,7 @@ python -m sric.standalone_gate --root .
 python scripts/release-gate.py
 ```
 
-The 0.5.10 installer regression verifies atomic first-party resolution, signed SRIC 0.5.11 pin/lock, venv-only repair, Termux `$PREFIX/bin`, safe Windows PATH handling, quiet installer smokes and dependency/import/help checks. Web regressions require Console/Workbench catalogs to return HTTP 200 with non-empty command/feature sets and complete CLI/Web coverage. Existing runtime/interface and unit/integration/E2E/security suites continue to cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters and ownership-safety semantics. Destructive operations are gate-tested rather than executed solely for coverage.
+The 0.5.11 Web regression verifies that both shared Web pages return a CSP allowing same-origin styles/scripts and that `/console/styles.css` is reachable. The 0.5.10 installer/catalog regressions remain in force for atomic first-party resolution, signed SRIC 0.5.11 pin/lock, venv-only repair, Termux `$PREFIX/bin`, safe Windows PATH handling, quiet installer smokes, HTTP-200 Console/Workbench catalogs and complete CLI/Web coverage. Existing unit/integration/E2E/security suites continue to cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters and ownership-safety semantics.
 
 Machine-readable evidence is written below `build/release-evidence/`; a release requires PASS for the exact commit.
 
