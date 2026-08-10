@@ -1,12 +1,25 @@
 # Changelog
 
+## 0.5.10 - 2026-08-09
+- Adopted signed SRIC Core 0.5.11 and its JSON-safe Web command catalog while preserving Exposure DNA temporal/evidence/human-review ownership semantics.
+- Kept normal Linux/Termux/Windows installation atomic and idempotent with no `--force-reinstall`; forced reinstall remains explicit to repair/update workflows.
+- Installer-internal doctor/capability/help smokes now suppress banners with `SENTINEL_BANNER=never` and emit captured diagnostics only on failure.
+- Added exact SRIC pin/lock, quiet-installer and HTTP-200 Console/Workbench catalog regressions.
+
+## 0.5.9 - 2026-08-09
+- Hardened repair installation so obsolete, incomplete or broken Python environments rebuild only `~/.exposuredna/venv`, preserving workspaces, configuration and evidence.
+- Termux prefers a writable `$PREFIX/bin` already present in `PATH`, making `exposuredna` immediately reachable after installation.
+- Windows PATH updates use SRIC Core's registry-backed `sric.install_path` helper instead of `setx`, avoiding user-PATH truncation/rewrite hazards.
+- Preserved atomic Exposure DNA + explicit first-party SRIC resolution and aligned the immutable SRIC pin/runtime lock to SRIC Core 0.5.10.
+- Expanded installer regressions for venv-only repair, Termux path selection, safe Windows PATH handling, Python discovery, dependency integrity and help smokes.
+
 ## 0.5.8 - 2026-08-09
 - Fixed clean/repair installation `ResolutionImpossible` when Exposure DNA depends on the first-party `sric-core` package distributed from an immutable GitHub snapshot rather than PyPI.
-- Linux/Termux and Windows now resolve Exposure DNA plus the explicit SRIC source in one pip transaction; the installer no longer performs a product-only `--force-reinstall` that can make pip search the public index for `sric-core`.
+- Linux/Termux and Windows resolve Exposure DNA plus the explicit SRIC source in one pip transaction; the installer no longer performs a product-only `--force-reinstall` that can make pip search the public index for `sric-core`.
 - Updated the immutable first-party SRIC pin and runtime lock to SRIC Core 0.5.9.
 - Fixed Linux PATH persistence so `.profile` does not inject literal quote characters into PATH.
 - Fixed Windows Python discovery to accept any installed Python 3 runtime that satisfies `>=3.11` instead of requiring `py -3.11` specifically.
-- Installers now bootstrap pip/setuptools/wheel, run `pip check`, import-probe shared Web modules, and smoke-test `--help`, `-h`, and `help` before reporting success.
+- Installers bootstrap pip/setuptools/wheel, run `pip check`, import-probe shared Web modules, and smoke-test `--help`, `-h`, and `help` before reporting success.
 - Added standalone regression coverage for the exact resolver topology, immutable SRIC pin, PATH quoting and Windows Python selection.
 
 ## 0.5.7 - 2026-08-09
