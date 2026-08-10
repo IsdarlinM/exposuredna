@@ -1,7 +1,7 @@
 # Exposure DNA
 
 ```text
-Exposure DNA :: v0.5.12
+Exposure DNA :: v0.5.13
 Developer: IsdarlinM
 
 Correlate organization security relationships across time with evidence.
@@ -13,7 +13,7 @@ Organization Security Knowledge Graph for correlating infrastructure, identity, 
 
 ## Standalone by design
 
-Exposure DNA is independently installable and independently useful. It requires **SRIC Core >=0.5.12,<0.6** for shared evidence, policy, workspace, graph and Web/runtime primitives; ReproSec, AuthTwin, FossilScope and TrustBoundary Mapper remain optional integrations.
+Exposure DNA is independently installable and independently useful. It requires **SRIC Core >=0.5.13,<0.6** for shared evidence, policy, workspace, graph and Web/runtime primitives; ReproSec, AuthTwin, FossilScope and TrustBoundary Mapper remain optional integrations.
 
 ```bash
 exposuredna doctor
@@ -35,14 +35,15 @@ exposuredna capabilities
 - SRIC graph, jobs/SSE, evidence lineage, notebook/search, evidence store and confidence primitives;
 - zero-config product update flow with same-version `update --force`, rollback and first-party runtime repair;
 - exact SRIC version/module diagnostics in `doctor` and `/api/v1/runtime-compatibility`;
-- full Web Feature Workbench with every public Exposure DNA CLI command and argument represented as structured responsive controls;
-- JSON-safe shared Web command catalog generation;
-- structured redacted HTTP 503 handling when command-catalog construction itself fails;
+- guided **Web Security Console** with every public Exposure DNA capability represented as operation cards and typed responsive controls;
+- checkboxes/tri-state selectors for flags, combo/select controls for closed choices, numeric/path controls, repeated-value controls and protected sensitive fields;
+- JSON-safe shared Web capability catalog generation with choice/bound/path metadata;
+- structured redacted HTTP 503 handling when capability-catalog construction itself fails;
 - bounded Web child termination/reaping and short-lived retired-job retention for active SSE/status readers;
 - shared operational exception containment and persisted Job Engine secret redaction;
-- shared-route CSP permitting same-origin Console/Workbench CSS/JS while retaining restrictive object/base/frame policies;
+- shared-route CSP permitting same-origin Security Console CSS/JS while retaining restrictive object/base/frame policies;
 - lazy shared-Web loading and actionable degraded Workbench 503 behavior;
-- advanced Web Command Console with exact public CLI command-tree parity and real-time jobs;
+- fixed-runner execution with exact CLI-tree parity and real-time jobs while keeping free-form command/argv entry out of the user interface;
 - professional Rich/Typer terminal presentation with subdued green banner and `--no-color` support.
 
 ## Entity resolution semantics
@@ -67,9 +68,9 @@ exposuredna doctor
 exposuredna capabilities
 ```
 
-The normal installer pins SRIC Core to immutable signed main commit `4dd0ad417e55fc76fb67d582ec50234bffff2876` and resolves that explicit first-party source in the same pip transaction as Exposure DNA. `SRIC_CORE_SOURCE=/path/to/sric-core` remains an explicit development/release-validation override.
+The normal installer pins SRIC Core to immutable GitHub-verified commit `bd90fe668e4a2a23c00a39f7d63df1c092b63c12` and resolves that explicit first-party source in the same pip transaction as Exposure DNA. `SRIC_CORE_SOURCE=/path/to/sric-core` remains an explicit development/release-validation override.
 
-The repair path preserves workspaces, configuration and evidence. It validates host Python and any existing runtime interpreter; a stale, incomplete or broken environment rebuilds only `~/.exposuredna/venv`. It bootstraps `pip`, `setuptools` and `wheel`, resolves constrained Exposure DNA plus the explicit SRIC source, runs `pip check`, verifies `sric.web_console`, `sric.web_workbench`, `sric.web_catalog` and `sric.web_runtime`, requires SRIC `>=0.5.12,<0.6`, and runs doctor/capability plus `--help`, `-h` and `help` smokes.
+The repair path preserves workspaces, configuration and evidence. It validates host Python and any existing runtime interpreter; a stale, incomplete or broken environment rebuilds only `~/.exposuredna/venv`. It bootstraps `pip`, `setuptools` and `wheel`, resolves constrained Exposure DNA plus the explicit SRIC source, runs `pip check`, verifies `sric.web_console`, `sric.web_workbench`, `sric.web_catalog` and `sric.web_runtime`, requires SRIC `>=0.5.13,<0.6`, and runs doctor/capability plus `--help`, `-h` and `help` smokes.
 
 Installer-internal smokes use `SENTINEL_BANNER=never` and a temporary validation log. Successful installation does not repeat the Exposure DNA banner; captured diagnostics are printed only if validation fails. Normal installation does not use `--force-reinstall`.
 
@@ -77,7 +78,7 @@ On Termux, a writable `$PREFIX/bin` already present in `PATH` is preferred so `e
 
 ## CLI presentation and help contract
 
-Interactive terminals display `Exposure DNA :: v0.5.12`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
+Interactive terminals display `Exposure DNA :: v0.5.13`, `Developer: IsdarlinM`, then the organization-security correlation purpose statement. Use `exposuredna --no-color COMMAND`, `exposuredna COMMAND --no-color`, or `NO_COLOR=1` for plain terminal presentation.
 
 Supported help forms are:
 
@@ -106,13 +107,13 @@ exposuredna web demo
 
 ## Web and API
 
-The native knowledge-graph dashboard remains the quick view and exposes **All Features** (`/workbench`) and **Advanced Console** (`/console`) directly. The Workbench is generated from `exposuredna.cli_all`, so every public command and every ordered CLI parameter has a structured responsive Web representation. `/api/v1/runtime-compatibility` exposes exact shared-runtime status.
+The native knowledge-graph dashboard remains the quick view for DNA coverage, knowledge graph, resolution queue, organization lineage and live jobs. `/workbench` is the primary **Security Console** and is generated from `exposuredna.cli_all`, so every public capability and every ordered CLI parameter has a structured responsive Web representation. `/console` is retained only as a compatibility alias that opens `/workbench`; it is not an argv-oriented user interface. `/api/v1/runtime-compatibility` exposes exact shared-runtime status.
 
-SRIC 0.5.12 normalizes command metadata to deterministic JSON-safe primitives before FastAPI serialization. If catalog construction itself fails unexpectedly, the API returns a bounded/redacted HTTP 503 instead of an opaque HTTP 500. Shared Web modules are loaded lazily so a stale/corrupt shared UI module does not crash every Exposure DNA CLI command.
+SRIC 0.5.13 normalizes command metadata to deterministic JSON-safe primitives and includes choice, numeric-bound and path metadata used to render appropriate HTML controls without duplicating product behavior. If catalog construction itself fails unexpectedly, the API returns a bounded/redacted HTTP 503 instead of an opaque HTTP 500. Shared Web modules are loaded lazily so a stale/corrupt shared UI module does not crash every Exposure DNA CLI command.
 
-For `/console` and `/workbench`, Exposure DNA permits same-origin shared CSS/JS while retaining restrictive object/base/frame CSP policies.
+For the Security Console, Exposure DNA permits same-origin shared CSS/JS while retaining restrictive object/base/frame CSP policies.
 
-The Workbench is not an operating-system shell. Execution uses the fixed SRIC runner with `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs and SSE output. Timed-out children use bounded terminate/kill/wait handling with background reaping when required; recently pruned terminal jobs remain briefly available to active status/SSE readers. Evidence, temporal and human-review semantics remain authoritative: correlation cannot create validated ownership and Web convenience cannot bypass that rule.
+Users do not type command paths, option names, flags or free-form argv. Structured control values are serialized only as an internal transport detail to the fixed SRIC runner. Execution uses `shell=False`, disabled stdin, CSRF protection, secret redaction, bounded/cancellable jobs, approval gates and SSE output. Timed-out children use bounded terminate/kill/wait handling with background reaping when required; recently pruned terminal jobs remain briefly available to active status/SSE readers. Evidence, temporal and human-review semantics remain authoritative: correlation cannot create validated ownership and Web convenience cannot bypass that rule.
 
 ## Updates and shared-runtime repair
 
@@ -122,9 +123,9 @@ exposuredna update
 exposuredna update --force
 ```
 
-Supported stale SRIC runtimes are advanced through fixed immutable GitHub-signature-verified snapshots one release at a time from 0.5.5 through the 0.5.12 floor, avoiding unsafe rollback-metadata jumps. A same-version corrupt 0.5.12 runtime is repaired from the fixed signed 0.5.12 snapshot. No blind `git pull` fallback is used.
+Supported stale SRIC runtimes are advanced through fixed immutable GitHub-signature-verified snapshots one release at a time from 0.5.5 through the 0.5.13 floor, avoiding unsafe rollback-metadata jumps. A same-version corrupt 0.5.13 runtime is repaired from the fixed verified 0.5.13 snapshot. No blind `git pull` fallback is used.
 
-The SRIC official update channel may remain on the previous fully gated release while 0.5.12 exact-commit gates are blocked; Exposure DNA's first-party pin/repair chain uses fixed verified commits independently of that moving channel.
+The Exposure DNA 0.5.13 official channel points to a GitHub-verified release commit and carries rollback metadata for the immediately preceding verified 0.5.12 snapshot.
 
 ## Validation gates
 
@@ -133,9 +134,9 @@ python -m sric.standalone_gate --root .
 python scripts/release-gate.py
 ```
 
-The 0.5.12 runtime regression walks every public Exposure DNA CLI command, all supported root/subcommand help forms and exact ordered CLI/Web parameter parity. Existing unit/integration/E2E/security suites cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters, Console/Workbench pages/assets/catalogs/coverage, native API resources and ownership-safety semantics.
+The 0.5.13 runtime regression walks every public Exposure DNA CLI command, all supported root/subcommand help forms, exact ordered CLI/Web parameter parity, structured control types and absence of free-form argv UI. Existing unit/integration/E2E/security suites cover graph/DNA dimensions, resolution queue, negative evidence, human review, temporal relationships, organization eras, snapshots, lineage, passive adapters, native dashboard pages/API resources and ownership-safety semantics.
 
-`TEST_EVIDENCE.md` is authoritative for what actually executed. The shared SRIC 0.5.12 focused runtime harness passed its four targeted regressions after first exposing and fixing a background-reaper return-code race. GitHub-hosted runners are currently blocked by an account billing lock, so zero-step workflows are not counted as PASS and do not prove Exposure DNA's complete exact-commit release gate.
+`TEST_EVIDENCE.md` is authoritative for what actually executed. GitHub-hosted runners are currently blocked by an account billing lock, so zero-step workflows are not counted as PASS and do not prove Exposure DNA's complete exact-commit release gate. The current execution environment also lacks GitHub network/DNS access, so no substitute clone-based local full-suite PASS is claimed.
 
 ## Uninstall
 
