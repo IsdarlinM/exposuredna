@@ -35,7 +35,7 @@ def plugins_list(path:Path=typer.Option(Path.home()/".sric"/"plugins","--path"))
     for manifest in PluginRegistry(path).list():typer.echo(f"{manifest.name}\t{manifest.version}\t{manifest.type}")
 @app.command("scope")
 def scope_check(target:str,method:str=typer.Option("GET","--method"),allow:list[str]=typer.Option([],"--allow"),deny:list[str]=typer.Option([],"--deny"))->None:
-    decision=ScopeEngine(ScopePolicy(allow_targets=allow,deny_targets=deny,allowed_methods={method.upper()})).evaluate(target,method);typer.echo(json.dumps({"allowed":decision.allowed,"reason":decision.reason,"matched_rule":decision.matched_rule},indent=2));
+    decision=ScopeEngine(ScopePolicy(allow_targets=allow,deny_targets=deny,allowed_methods={method.upper()})).evaluate(target,method);typer.echo(json.dumps({"allowed":decision.allowed,"reason":decision.reason,"matched_rule":decision.matched_rule},indent=2))
     if not decision.allowed:raise typer.Exit(3)
 @app.command("query")
 def shared_query(workspace:str,query:str,limit:int=typer.Option(50,"--limit",min=1,max=500),root:Path=typer.Option(rd(),"--root"))->None:typer.echo(json.dumps(TemporalGraph(wp(workspace,root)).search(query,limit),indent=2,default=str))

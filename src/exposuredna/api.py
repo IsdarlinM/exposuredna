@@ -11,6 +11,7 @@ from sric.graph import TemporalGraph
 from sric.jobs import JobEngine
 from sric.lineage import EvidenceLineage
 from sric.notebook import ResearchNotebook
+from sric.workspace import Workspace
 
 from . import __version__
 from .core import ExposureEngine
@@ -21,6 +22,7 @@ JS = """const e=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':
 
 
 def create_app(workspace: Path) -> FastAPI:
+    workspace = Workspace.initialize(workspace).root
     app = FastAPI(title="Exposure DNA Local API", version=__version__, redoc_url=None)
     engine = ExposureEngine(workspace)
     graph_store = TemporalGraph(workspace)

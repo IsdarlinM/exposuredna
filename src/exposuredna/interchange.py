@@ -209,58 +209,58 @@ def apply_resolution_plan(
     changed_entities: set[str] = set()
     changed_relationships: set[str] = set()
 
-    for operation in plan.merges:
-        target = entities.get(operation.target_entity_id)
+    for merge_operation in plan.merges:
+        target = entities.get(merge_operation.target_entity_id)
         if target is None:
-            raise ValueError(f"unknown merge target: {operation.target_entity_id}")
-        missing = sorted(set(operation.source_entity_ids) - set(entities))
+            raise ValueError(f"unknown merge target: {merge_operation.target_entity_id}")
+        missing = sorted(set(merge_operation.source_entity_ids) - set(entities))
         if missing:
             raise ValueError("unknown merge sources: " + ", ".join(missing))
-        sources = [entities[source_id] for source_id in operation.source_entity_ids]
-        entities[target.entity_id] = _merge_entity(target, sources, operation)
+        sources = [entities[source_id] for source_id in merge_operation.source_entity_ids]
+        entities[target.entity_id] = _merge_entity(target, sources, merge_operation)
         for relationship_id, relationship in list(relationships.items()):
-            update: dict[str, str] = {}
-            if relationship.source_entity_id in operation.source_entity_ids:
-                update["source_entity_id"] = target.entity_id
-            if relationship.target_entity_id in operation.source_entity_ids:
-                update["target_entity_id"] = target.entity_id
-            if update:
-                relationships[relationship_id] = relationship.model_copy(update=update)
+            relationship_update: dict[str, str] = {}
+            if relationship.source_entity_id in merge_operation.source_entity_ids:
+                relationship_update["source_entity_id"] = target.entity_id
+            if relationship.target_entity_id in merge_operation.source_entity_ids:
+                relationship_update["target_entity_id"] = target.entity_id
+            if relationship_update:
+                relationships[relationship_id] = relationship.model_copy(update=relationship_update)
                 changed_relationships.add(relationship_id)
-        for source_id in operation.source_entity_ids:
+        for source_id in merge_operation.source_entity_ids:
             entities.pop(source_id)
             changed_entities.add(source_id)
         changed_entities.add(target.entity_id)
 
-    for operation in plan.splits:
-        source = entities.get(operation.source_entity_id)
+    for split_operation in plan.splits:
+        source = entities.get(split_operation.source_entity_id)
         if source is None:
-            raise ValueError(f"unknown split source: {operation.source_entity_id}")
-        replacement_ids = {item.entity_id for item in operation.new_entities}
+            raise ValueError(f"unknown split source: {split_operation.source_entity_id}")
+        replacement_ids = {item.entity_id for item in split_operation.new_entities}
         if replacement_ids & set(entities):
             raise ValueError("split replacement IDs already exist")
         touching = {
             relationship_id
             for relationship_id, relationship in relationships.items()
-            if operation.source_entity_id
+            if split_operation.source_entity_id
             in {relationship.source_entity_id, relationship.target_entity_id}
         }
-        if touching != set(operation.relationship_assignments):
-            missing = sorted(touching - set(operation.relationship_assignments))
-            extra = sorted(set(operation.relationship_assignments) - touching)
+        if touching != set(split_operation.relationship_assignments):
+            missing = sorted(touching - set(split_operation.relationship_assignments))
+            extra = sorted(set(split_operation.relationship_assignments) - touching)
             raise ValueError(
                 f"split relationship assignments incomplete; missing={missing}, extra={extra}"
             )
-        for replacement in operation.new_entities:
+        for replacement in split_operation.new_entities:
             attributes = dict(replacement.attributes)
             attributes["split_from"] = source.entity_id
-            attributes["split_reason"] = operation.reason
+            attributes["split_reason"] = split_operation.reason
             entities[replacement.entity_id] = replacement.model_copy(
                 update={
                     "evidence_ids": sorted(
                         set(replacement.evidence_ids)
                         | set(source.evidence_ids)
-                        | set(operation.evidence_ids)
+                        | set(split_operation.evidence_ids)
                     ),
                     "attributes": attributes,
                 }
@@ -268,13 +268,13 @@ def apply_resolution_plan(
             changed_entities.add(replacement.entity_id)
         for relationship_id in touching:
             relationship = relationships[relationship_id]
-            replacement_id = operation.relationship_assignments[relationship_id]
-            update: dict[str, str] = {}
+            replacement_id = split_operation.relationship_assignments[relationship_id]
+            split_update: dict[str, str] = {}
             if relationship.source_entity_id == source.entity_id:
-                update["source_entity_id"] = replacement_id
+                split_update["source_entity_id"] = replacement_id
             if relationship.target_entity_id == source.entity_id:
-                update["target_entity_id"] = replacement_id
-            relationships[relationship_id] = relationship.model_copy(update=update)
+                split_update["target_entity_id"] = replacement_id
+            relationships[relationship_id] = relationship.model_copy(update=split_update)
             changed_relationships.add(relationship_id)
         entities.pop(source.entity_id)
         changed_entities.add(source.entity_id)

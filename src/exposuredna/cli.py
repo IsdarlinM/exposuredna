@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 import typer
 from sric.plugins import PluginRegistry
@@ -42,9 +42,9 @@ def doctor() -> None:
     plugin_path = Path.home() / ".sric" / "plugins"
     plugins = PluginRegistry(plugin_path).list()
     runtime = sric_runtime_status()
-    checks = {
+    checks: dict[str, dict[str, Any]] = {
         "python": {"ok": sys.version_info >= (3, 11), "version": sys.version.split()[0]},
-        "sric": {"ok": runtime.compatible, "version": runtime.version, "required": ">=0.5.14,<0.6", "missing_modules": list(runtime.missing_modules), "reasons": list(runtime.reasons)},
+        "sric": {"ok": runtime.compatible, "version": runtime.version, "required": ">=0.5.16,<0.6", "missing_modules": list(runtime.missing_modules), "reasons": list(runtime.reasons)},
         "ai": {"ok": True, "mode": "disabled", "cloud_uploads": False},
         "plugins": {"ok": True, "count": len(plugins), "path": str(plugin_path)},
         "privacy": {"ok": True, "telemetry": False},
@@ -163,6 +163,6 @@ def help_command(ctx: typer.Context, command: Optional[str] = typer.Argument(Non
 
 def run() -> None:
     """Console entrypoint supporting `exposuredna COMMAND help`."""
-    if len(sys.argv) >= 3 and sys.argv[-1] == "help" and sys.argv[1] != "help":
+    if len(sys.argv) >= 3 and sys.argv[-1] == "help":
         sys.argv[-1] = "--help"
     app()

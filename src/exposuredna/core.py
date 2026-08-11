@@ -51,12 +51,12 @@ class ExposureEngine:
         for e in self.store.load()["entities"]: out[e["dimension"]]+=1
         return dict(sorted(out.items()))
     def timeline(self)->list[dict[str,Any]]:
-        out=[]
+        out: list[dict[str, Any]]=[]
         for x in self.store.load()["entities"]:
             e=Entity.model_validate(x); out.append({"entity_id":e.entity_id,"value":e.value,"dimension":e.dimension.value,"first_seen":e.first_seen.isoformat() if e.first_seen else None,"last_seen":e.last_seen.isoformat() if e.last_seen else None,"observed_at":e.observed_at.isoformat(),"source":e.source})
         return sorted(out,key=lambda x:x["observed_at"])
     def correlate(self)->list[ResolutionCandidate]:
-        d=self.store.load(); entities=[Entity.model_validate(x) for x in d["entities"]]; out=[]
+        d=self.store.load(); entities=[Entity.model_validate(x) for x in d["entities"]]; out: list[ResolutionCandidate]=[]
         for i,a in enumerate(entities):
             for b in entities[i+1:]:
                 supporting=[]; against=[]; evidence=sorted(set(a.evidence_ids+b.evidence_ids)); score=0.0

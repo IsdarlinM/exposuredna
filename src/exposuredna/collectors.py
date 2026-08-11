@@ -37,8 +37,8 @@ def collect_passive(path: Path, adapter: str) -> list[Entity]:
     out: dict[str, Entity] = {}
 
     if adapter == "openapi":
-        payload = json.loads(text)
-        paths = payload.get("paths", {}) if isinstance(payload, dict) else {}
+        openapi_payload = json.loads(text)
+        paths = openapi_payload.get("paths", {}) if isinstance(openapi_payload, dict) else {}
         for value in sorted(paths) if isinstance(paths, dict) else []:
             ent = _entity(adapter, str(value), "api_endpoint", Dimension.API, path); out[ent.entity_id] = ent
         return list(out.values())
